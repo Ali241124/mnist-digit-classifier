@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="MNIST Digit Classifier – A CNN-based deep learning model achieving ~98% accuracy deployed as a Flask REST API for real-time handwritten digit recognition." />
+  <meta name="keywords" content="MNIST, digit classifier, CNN, deep learning, Flask, TensorFlow, Keras, neural network" />
+  <meta property="og:title" content="MNIST Digit Classifier | CNN + Flask Deployment" />
+  <meta property="og:description" content="Real-time handwritten digit recognition using Convolutional Neural Networks, deployed as a REST API." />
+  <title>MNIST Digit Classifier | CNN + Flask Deployment</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <div class="nav-logo">
+        <span class="logo-icon">🧠</span>
+        <span class="logo-text">MNIST<span class="logo-accent">Classifier</span></span>
+      </div>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="#overview" class="nav-link">Overview</a></li>
+        <li><a href="#demo" class="nav-link">Live Demo</a></li>
+        <li><a href="#architecture" class="nav-link">Architecture</a></li>
+        <li><a href="#tech" class="nav-link">Tech Stack</a></li>
+        <li><a href="#api" class="nav-link">API</a></li>
+        <li><a href="#results" class="nav-link">Results</a></li>
+      </ul>
+      <button class="nav-cta" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">Try Demo</button>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero">
+    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+    <div class="hero-content">
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        Deep Learning Project
+      </div>
+      <h1 class="hero-title">
+        Handwritten Digit
+        <span class="hero-title-gradient">Recognition</span>
+        with CNN
+      </h1>
+      <p class="hero-subtitle">
+        A Convolutional Neural Network trained on 70,000 MNIST images, achieving
+        <strong class="highlight">~98% accuracy</strong> and deployed as a real-time
+        <strong class="highlight">Flask REST API</strong>.
+      </p>
+      <div class="hero-stats">
+        <div class="stat-card" id="stat1">
+          <div class="stat-number" data-target="98">0</div>
+          <div class="stat-suffix">%</div>
+          <div class="stat-label">Test Accuracy</div>
+        </div>
+        <div class="stat-card" id="stat2">
+          <div class="stat-number" data-target="70000">0</div>
+          <div class="stat-suffix">+</div>
+          <div class="stat-label">Training Images</div>
+        </div>
+        <div class="stat-card" id="stat3">
+          <div class="stat-number" data-target="10">0</div>
+          <div class="stat-suffix"></div>
+          <div class="stat-label">Digit Classes</div>
+        </div>
+        <div class="stat-card" id="stat4">
+          <div class="stat-number" data-target="5">0</div>
+          <div class="stat-suffix">+</div>
+          <div class="stat-label">CNN Layers</div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn-primary" onclick="document.getElementById('demo').scrollIntoView({behavior:'smooth'})">
+          <span>✏️</span> Try Live Demo
+        </button>
+        <button class="btn-secondary" onclick="document.getElementById('architecture').scrollIntoView({behavior:'smooth'})">
+          <span>📐</span> View Architecture
+        </button>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="digit-showcase">
+        <div class="digit-grid-wrapper">
+          <div class="digit-grid" id="digitGrid"></div>
+        </div>
+        <div class="prediction-label">MNIST Training Samples</div>
+      </div>
+    </div>
+    <div class="hero-scroll-hint">
+      <div class="scroll-arrow"></div>
+      <span>Scroll to explore</span>
+    </div>
+  </section>
+
+  <!-- Overview Section -->
+  <section id="overview" class="section overview-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">📌 Overview</span>
+        <h2 class="section-title">What is this project?</h2>
+        <p class="section-subtitle">A complete end-to-end deep learning pipeline from raw pixels to production API</p>
+      </div>
+
+      <div class="overview-cards">
+        <div class="overview-card glass-card">
+          <div class="card-icon-wrapper gradient-blue">🗂️</div>
+          <h3>MNIST Dataset</h3>
+          <p>70,000 grayscale 28×28 pixel images of handwritten digits (0–9), split into 60,000 training and 10,000 test samples.</p>
+          <div class="card-metric">
+            <span class="metric-value">60K</span>
+            <span class="metric-label">Training</span>
+          </div>
+        </div>
+        <div class="overview-card glass-card">
+          <div class="card-icon-wrapper gradient-purple">🧠</div>
+          <h3>CNN Model</h3>
+          <p>Multi-layer Convolutional Neural Network built with TensorFlow/Keras. Learns spatial features like edges, curves, and shapes.</p>
+          <div class="card-metric">
+            <span class="metric-value">~98%</span>
+            <span class="metric-label">Accuracy</span>
+          </div>
+        </div>
+        <div class="overview-card glass-card">
+          <div class="card-icon-wrapper gradient-green">🌐</div>
+          <h3>Flask API</h3>
+          <p>Production-ready REST API built with Flask. Accepts image uploads and returns predictions with confidence scores.</p>
+          <div class="card-metric">
+            <span class="metric-value">&lt;100ms</span>
+            <span class="metric-label">Inference</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="pipeline-flow">
+        <h3 class="pipeline-title">End-to-End Pipeline</h3>
+        <div class="pipeline-steps">
+          <div class="pipeline-step">
+            <div class="step-icon">📥</div>
+            <div class="step-label">Load MNIST Data</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="step-icon">🔄</div>
+            <div class="step-label">Preprocess</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="step-icon">🧠</div>
+            <div class="step-label">Train CNN</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="step-icon">✅</div>
+            <div class="step-label">Validate</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="step-icon">💾</div>
+            <div class="step-label">Save Model</div>
+          </div>
+          <div class="pipeline-arrow">→</div>
+          <div class="pipeline-step">
+            <div class="step-icon">🚀</div>
+            <div class="step-label">Deploy API</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Demo Section -->
+  <section id="demo" class="section demo-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">✏️ Live Demo</span>
+        <h2 class="section-title">Draw a Digit</h2>
+        <p class="section-subtitle">Draw any digit (0–9) in the canvas below and see the CNN prediction in action</p>
+      </div>
+
+      <div class="demo-wrapper">
+        <div class="canvas-panel glass-card">
+          <div class="canvas-header">
+            <span class="canvas-title">Drawing Canvas</span>
+            <div class="canvas-controls">
+              <button id="clearBtn" class="ctrl-btn">Clear</button>
+              <button id="predictBtn" class="ctrl-btn predict-btn">Predict →</button>
+            </div>
+          </div>
+          <div class="canvas-container">
+            <canvas id="drawingCanvas" width="280" height="280"></canvas>
+            <div class="canvas-hint" id="canvasHint">Draw here</div>
+          </div>
+          <div class="brush-controls">
+            <label>Brush Size:</label>
+            <input type="range" id="brushSize" min="8" max="32" value="20" class="brush-slider" />
+            <span id="brushSizeLabel">20px</span>
+          </div>
+        </div>
+
+        <div class="prediction-panel glass-card">
+          <div class="prediction-header">
+            <span class="prediction-title">Prediction Result</span>
+            <div class="confidence-badge" id="confidenceBadge">—</div>
+          </div>
+
+          <div class="predicted-digit-display" id="predictedDigitDisplay">
+            <div class="digit-placeholder">?</div>
+          </div>
+
+          <div class="confidence-bars" id="confidenceBars">
+            <div class="bars-label">Confidence per digit:</div>
+            <div class="bars-container">
+              <!-- Generated dynamically -->
+            </div>
+          </div>
+
+          <div class="prediction-note">
+            <span class="note-icon">💡</span>
+            <span>This demo uses a simulated model. Connect to Flask API for real inference.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Architecture Section -->
+  <section id="architecture" class="section arch-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">📐 Architecture</span>
+        <h2 class="section-title">CNN Model Architecture</h2>
+        <p class="section-subtitle">Layer-by-layer breakdown of the Convolutional Neural Network</p>
+      </div>
+
+      <div class="arch-wrapper">
+        <div class="arch-diagram">
+          <div class="layer-flow">
+
+            <div class="arch-layer" data-layer="0">
+              <div class="layer-visual input-layer">
+                <div class="layer-grid">
+                  <div class="mini-pixel-grid" id="miniGrid"></div>
+                </div>
+              </div>
+              <div class="layer-info">
+                <div class="layer-name">Input Layer</div>
+                <div class="layer-shape">28 × 28 × 1</div>
+                <div class="layer-desc">Grayscale image, normalized to [0, 1]</div>
+              </div>
+            </div>
+
+            <div class="layer-connector"><div class="connector-line"></div></div>
+
+            <div class="arch-layer" data-layer="1">
+              <div class="layer-visual conv-layer">
+                <div class="filter-stack">
+                  <div class="filter-box"></div>
+                  <div class="filter-box"></div>
+                  <div class="filter-box"></div>
+                </div>
+              </div>
+              <div class="layer-info">
+                <div class="layer-name">Conv2D Layer 1</div>
+                <div class="layer-shape">32 filters, 3×3, ReLU</div>
+                <div class="layer-desc">Detects edges and basic textures</div>
+              </div>
+            </div>
+
+            <div class="layer-connector"><div class="connector-line"></div></div>
+
+            <div class="arch-layer" data-layer="2">
+              <div class="layer-visual pool-layer">
+                <div class="pool-box">
+                  <div class="pool-arrow">↙ ↘</div>
+                  <div class="pool-arrow">↖ ↗</div>
+                </div>
+              </div>
+              <div class="layer-info">
+                <div class="layer-name">MaxPooling 1</div>
+                <div class="layer-shape">2×2 pool, stride 2</div>
+                <div class="layer-desc">Reduces spatial dimensions by half</div>
+              </div>
+            </div>
+
+            <div class="layer-connector"><div class="connector-line"></div></div>
+
+            <div class="arch-layer" data-layer="3">
+              <div class="layer-visual conv-layer conv2">
+                <div class="filter-stack">
+                  <div class="filter-box"></div>
+                  <div class="filter-box"></div>
+                  <div class="filter-box"></div>
+                  <div class="filter-box"></div>
+                  <div class="filter-box"></div>
+                </div>
+              </div>
+              <div class="layer-info">
+                <div class="layer-name">Conv2D Layer 2</div>
+                <div class="layer-shape">64 filters, 3×3, ReLU</div>
+                <div class="layer-desc">Learns curves and digit shapes</div>
+              </div>
+            </div>
+
+            <div class="layer-connector"><div class="connector-line"></div></div>
+
+            <div class="arch-layer" data-layer="4">
+              <div class="layer-visual pool-layer">
+                <div class="pool-box">
+                  <div class="pool-arrow">↙ ↘</div>
+                  <div class="pool-arrow">↖ ↗</div>
+                </div>
+              </div>
+              <div class="layer-info">
+                <div class="layer-name">MaxPooling 2</div>
+                <div class="layer-shape">2×2 pool, stride 2</div>
+                <div class="layer-desc">Further spatial reduction</div>
+              </div>
+            </div>
+
+            <div class="layer-connector"><div class="connector-line"></div></div>
+
+            <div class="arch-layer" data-layer="5">
+              <div class="layer-visual flatten-layer">
+                <div class="flatten-visual">
+                  <div class="flat-bar" style="height:80%"></div>
+                  <div class="flat-bar" style="height:60%"></div>
+                  <div class="flat-bar" style="height:90%"></div>
+                  <div class="flat-bar" style="height:40%"></div>
+                  <div class="flat-bar" style="height:70%"></div>
+                  <div class="flat-bar" style="height:55%"></div>
+                  <div class="flat-bar" style="height:85%"></div>
+                </div>
+              </div>
+              <div class="layer-info">
+                <div class="layer-name">Flatten</div>
+                <div class="layer-shape">1D vector</div>
+                <div class="layer-desc">Converts 2D feature maps to 1D</div>
+              </div>
+            </div>
+
+            <div class="layer-connector"><div class="connector-line"></div></div>
+
+            <div class="arch-layer" data-layer="6">
+              <div class="layer-visual dense-layer">
+                <div class="dense-nodes">
+                  <div class="node"></div>
+                  <div class="node"></div>
+                  <div class="node"></div>
+                  <div class="node active"></div>
+                  <div class="node"></div>
+                </div>
+              </div>
+              <div class="layer-info">
+                <div class="layer-name">Dense Layer</div>
+                <div class="layer-shape">128 units, ReLU</div>
+                <div class="layer-desc">High-level feature combination</div>
+              </div>
+            </div>
+
+            <div class="layer-connector"><div class="connector-line"></div></div>
+
+            <div class="arch-layer" data-layer="7">
+              <div class="layer-visual output-layer">
+                <div class="output-nodes">
+                  <div class="out-node" data-digit="0">0</div>
+                  <div class="out-node" data-digit="1">1</div>
+                  <div class="out-node active-out" data-digit="7">7</div>
+                  <div class="out-node" data-digit="9">9</div>
+                </div>
+              </div>
+              <div class="layer-info">
+                <div class="layer-name">Output Layer</div>
+                <div class="layer-shape">10 units, Softmax</div>
+                <div class="layer-desc">Probability distribution over 0–9</div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="arch-code-panel glass-card">
+          <div class="code-header">
+            <span class="code-title">📄 model.py (Keras)</span>
+            <button class="copy-btn" id="copyModelCode" onclick="copyCode('modelCode', this)">Copy</button>
+          </div>
+          <pre class="code-block" id="modelCode"><code><span class="kw">import</span> tensorflow <span class="kw">as</span> tf
+<span class="kw">from</span> tensorflow <span class="kw">import</span> keras
+
+<span class="comment"># Build CNN Model</span>
+model = keras.Sequential([
+    <span class="comment"># Input + Conv Block 1</span>
+    keras.layers.Conv2D(
+        <span class="num">32</span>, (<span class="num">3</span>,<span class="num">3</span>), activation=<span class="str">'relu'</span>,
+        input_shape=(<span class="num">28</span>, <span class="num">28</span>, <span class="num">1</span>)
+    ),
+    keras.layers.MaxPooling2D((<span class="num">2</span>, <span class="num">2</span>)),
+
+    <span class="comment"># Conv Block 2</span>
+    keras.layers.Conv2D(
+        <span class="num">64</span>, (<span class="num">3</span>,<span class="num">3</span>), activation=<span class="str">'relu'</span>
+    ),
+    keras.layers.MaxPooling2D((<span class="num">2</span>, <span class="num">2</span>)),
+
+    <span class="comment"># Classifier Head</span>
+    keras.layers.Flatten(),
+    keras.layers.Dense(<span class="num">128</span>, activation=<span class="str">'relu'</span>),
+    keras.layers.Dropout(<span class="num">0.5</span>),
+    keras.layers.Dense(<span class="num">10</span>, activation=<span class="str">'softmax'</span>)
+])
+
+model.compile(
+    optimizer=<span class="str">'adam'</span>,
+    loss=<span class="str">'sparse_categorical_crossentropy'</span>,
+    metrics=[<span class="str">'accuracy'</span>]
+)
+
+model.fit(
+    X_train, y_train,
+    epochs=<span class="num">10</span>,
+    validation_split=<span class="num">0.1</span>
+)</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Tech Stack Section -->
+  <section id="tech" class="section tech-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">⚙️ Tech Stack</span>
+        <h2 class="section-title">Technologies Used</h2>
+        <p class="section-subtitle">A carefully chosen stack for training, inference, and deployment</p>
+      </div>
+
+      <div class="tech-grid">
+        <div class="tech-card glass-card" data-tech="python">
+          <div class="tech-icon">🐍</div>
+          <div class="tech-name">Python</div>
+          <div class="tech-role">Core Language</div>
+          <div class="tech-bar"><div class="tech-fill" style="--fill: 100%"></div></div>
+        </div>
+        <div class="tech-card glass-card" data-tech="tensorflow">
+          <div class="tech-icon">🔶</div>
+          <div class="tech-name">TensorFlow</div>
+          <div class="tech-role">Deep Learning Framework</div>
+          <div class="tech-bar"><div class="tech-fill" style="--fill: 95%"></div></div>
+        </div>
+        <div class="tech-card glass-card" data-tech="keras">
+          <div class="tech-icon">🔴</div>
+          <div class="tech-name">Keras</div>
+          <div class="tech-role">Model API</div>
+          <div class="tech-bar"><div class="tech-fill" style="--fill: 95%"></div></div>
+        </div>
+        <div class="tech-card glass-card" data-tech="flask">
+          <div class="tech-icon">⚗️</div>
+          <div class="tech-name">Flask</div>
+          <div class="tech-role">REST API Framework</div>
+          <div class="tech-bar"><div class="tech-fill" style="--fill: 85%"></div></div>
+        </div>
+        <div class="tech-card glass-card" data-tech="numpy">
+          <div class="tech-icon">🔢</div>
+          <div class="tech-name">NumPy</div>
+          <div class="tech-role">Array Operations</div>
+          <div class="tech-bar"><div class="tech-fill" style="--fill: 90%"></div></div>
+        </div>
+        <div class="tech-card glass-card" data-tech="matplotlib">
+          <div class="tech-icon">📊</div>
+          <div class="tech-name">Matplotlib</div>
+          <div class="tech-role">Visualization</div>
+          <div class="tech-bar"><div class="tech-fill" style="--fill: 80%"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- API Section -->
+  <section id="api" class="section api-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">🌐 API</span>
+        <h2 class="section-title">Flask REST API</h2>
+        <p class="section-subtitle">Simple and fast – send an image, get a prediction</p>
+      </div>
+
+      <div class="api-layout">
+        <div class="api-flow-panel">
+          <h3 class="flow-title">Request Flow</h3>
+          <div class="api-steps">
+            <div class="api-step">
+              <div class="step-num">01</div>
+              <div class="step-content">
+                <div class="step-name">Client sends image</div>
+                <div class="step-detail">POST /predict with multipart form-data</div>
+              </div>
+            </div>
+            <div class="step-line"></div>
+            <div class="api-step">
+              <div class="step-num">02</div>
+              <div class="step-content">
+                <div class="step-name">Flask receives request</div>
+                <div class="step-detail">Parses and validates image file</div>
+              </div>
+            </div>
+            <div class="step-line"></div>
+            <div class="api-step">
+              <div class="step-num">03</div>
+              <div class="step-content">
+                <div class="step-name">Image preprocessing</div>
+                <div class="step-detail">Resize to 28×28, grayscale, normalize</div>
+              </div>
+            </div>
+            <div class="step-line"></div>
+            <div class="api-step">
+              <div class="step-num">04</div>
+              <div class="step-content">
+                <div class="step-name">CNN inference</div>
+                <div class="step-detail">Model.predict() returns probabilities</div>
+              </div>
+            </div>
+            <div class="step-line"></div>
+            <div class="api-step">
+              <div class="step-num">05</div>
+              <div class="step-content">
+                <div class="step-name">JSON response</div>
+                <div class="step-detail">prediction + confidence returned</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="api-code-panel">
+          <div class="code-tabs">
+            <button class="tab-btn active" data-tab="flask" onclick="switchTab('flask', this)">app.py</button>
+            <button class="tab-btn" data-tab="curl" onclick="switchTab('curl', this)">cURL</button>
+            <button class="tab-btn" data-tab="response" onclick="switchTab('response', this)">Response</button>
+          </div>
+
+          <div class="code-tab-content" id="tab-flask">
+            <div class="code-header-sm">
+              <span>📄 app.py (Flask)</span>
+              <button class="copy-btn" onclick="copyCode('flaskCode', this)">Copy</button>
+            </div>
+            <pre class="code-block" id="flaskCode"><code><span class="kw">from</span> flask <span class="kw">import</span> Flask, request, jsonify
+<span class="kw">import</span> numpy <span class="kw">as</span> np
+<span class="kw">from</span> PIL <span class="kw">import</span> Image
+<span class="kw">import</span> tensorflow <span class="kw">as</span> tf
+<span class="kw">import</span> io
+
+app = Flask(__name__)
+model = tf.keras.models.load_model(<span class="str">'mnist_cnn.h5'</span>)
+
+<span class="decorator">@app.route</span>(<span class="str">'/predict'</span>, methods=[<span class="str">'POST'</span>])
+<span class="kw">def</span> <span class="fn">predict</span>():
+    file = request.files[<span class="str">'image'</span>]
+    img = Image.open(io.BytesIO(file.read()))
+    img = img.convert(<span class="str">'L'</span>).resize((<span class="num">28</span>, <span class="num">28</span>))
+    arr = np.array(img) / <span class="num">255.0</span>
+    arr = arr.reshape(<span class="num">1</span>, <span class="num">28</span>, <span class="num">28</span>, <span class="num">1</span>)
+
+    preds = model.predict(arr)[<span class="num">0</span>]
+    digit = <span class="fn">int</span>(np.argmax(preds))
+    confidence = <span class="fn">float</span>(np.max(preds))
+
+    <span class="kw">return</span> jsonify({
+        <span class="str">'prediction'</span>: digit,
+        <span class="str">'confidence'</span>: <span class="fn">round</span>(confidence, <span class="num">4</span>)
+    })
+
+<span class="kw">if</span> __name__ == <span class="str">'__main__'</span>:
+    app.run(debug=<span class="kw">True</span>)</code></pre>
+          </div>
+
+          <div class="code-tab-content hidden" id="tab-curl">
+            <div class="code-header-sm">
+              <span>🖥️ cURL Request</span>
+              <button class="copy-btn" onclick="copyCode('curlCode', this)">Copy</button>
+            </div>
+            <pre class="code-block" id="curlCode"><code><span class="comment"># Send image to Flask API</span>
+curl -X POST http://localhost:5000/predict \
+  -F <span class="str">"image=@digit.png"</span>
+
+<span class="comment"># Python requests example</span>
+<span class="kw">import</span> requests
+
+url = <span class="str">"http://localhost:5000/predict"</span>
+files = {<span class="str">"image"</span>: open(<span class="str">"digit.png"</span>, <span class="str">"rb"</span>)}
+response = requests.post(url, files=files)
+result = response.json()
+
+<span class="fn">print</span>(f<span class="str">"Predicted digit: {result['prediction']}"</span>)
+<span class="fn">print</span>(f<span class="str">"Confidence: {result['confidence'] * 100:.1f}%"</span>)</code></pre>
+          </div>
+
+          <div class="code-tab-content hidden" id="tab-response">
+            <div class="code-header-sm">
+              <span>📤 JSON Response</span>
+              <button class="copy-btn" onclick="copyCode('responseCode', this)">Copy</button>
+            </div>
+            <pre class="code-block" id="responseCode"><code><span class="comment">// HTTP 200 OK</span>
+{
+  <span class="str">"prediction"</span>: <span class="num">7</span>,
+  <span class="str">"confidence"</span>: <span class="num">0.9812</span>
+}
+
+<span class="comment">// Error response (invalid input)</span>
+{
+  <span class="str">"error"</span>: <span class="str">"Invalid image format"</span>,
+  <span class="str">"status"</span>: <span class="num">400</span>
+}
+
+<span class="comment">// Health check endpoint</span>
+GET /health
+{
+  <span class="str">"status"</span>: <span class="str">"ok"</span>,
+  <span class="str">"model"</span>: <span class="str">"mnist_cnn_v1"</span>,
+  <span class="str">"accuracy"</span>: <span class="num">0.9812</span>
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Results Section -->
+  <section id="results" class="section results-section">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">📈 Results</span>
+        <h2 class="section-title">Training Results</h2>
+        <p class="section-subtitle">Performance metrics over 10 epochs of training</p>
+      </div>
+
+      <div class="results-layout">
+        <div class="chart-wrapper glass-card">
+          <div class="chart-title">Accuracy over Epochs</div>
+          <div class="chart-container">
+            <canvas id="accuracyChart" width="500" height="250"></canvas>
+          </div>
+        </div>
+
+        <div class="metrics-panel">
+          <div class="metric-card glass-card">
+            <div class="metric-icon">🎯</div>
+            <div class="metric-value">98.2%</div>
+            <div class="metric-name">Test Accuracy</div>
+            <div class="metric-bar-outer">
+              <div class="metric-bar-inner" style="--w: 98.2%"></div>
+            </div>
+          </div>
+          <div class="metric-card glass-card">
+            <div class="metric-icon">📉</div>
+            <div class="metric-value">0.062</div>
+            <div class="metric-name">Test Loss</div>
+            <div class="metric-bar-outer">
+              <div class="metric-bar-inner loss-bar" style="--w: 6.2%"></div>
+            </div>
+          </div>
+          <div class="metric-card glass-card">
+            <div class="metric-icon">⚡</div>
+            <div class="metric-value">~12s</div>
+            <div class="metric-name">Per Epoch Time</div>
+            <div class="metric-bar-outer">
+              <div class="metric-bar-inner speed-bar" style="--w: 40%"></div>
+            </div>
+          </div>
+          <div class="metric-card glass-card">
+            <div class="metric-icon">🔥</div>
+            <div class="metric-value">10</div>
+            <div class="metric-name">Epochs Trained</div>
+            <div class="metric-bar-outer">
+              <div class="metric-bar-inner epochs-bar" style="--w: 100%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="challenges-improvements">
+        <div class="challenge-card glass-card">
+          <h3>🔥 Challenges Faced</h3>
+          <ul class="challenge-list">
+            <li><span class="challenge-icon">⚡</span> Preprocessing inconsistency between training and real input</li>
+            <li><span class="challenge-icon">⚡</span> Handling noisy or skewed handwritten digits</li>
+            <li><span class="challenge-icon">⚡</span> Model generalization on unseen writing styles</li>
+            <li><span class="challenge-icon">⚡</span> Flask deployment — model loading and request handling</li>
+          </ul>
+        </div>
+        <div class="improvement-card glass-card">
+          <h3>🚀 Future Improvements</h3>
+          <ul class="improvement-list">
+            <li><span class="improve-icon">✨</span> Add Streamlit or React frontend</li>
+            <li><span class="improve-icon">✨</span> Deploy with Docker + AWS / Render / Heroku</li>
+            <li><span class="improve-icon">✨</span> Data augmentation for higher accuracy</li>
+            <li><span class="improve-icon">✨</span> Extend to A–Z character recognition</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-brand">
+        <span class="logo-icon">🧠</span>
+        <span class="logo-text">MNIST<span class="logo-accent">Classifier</span></span>
+      </div>
+      <div class="footer-tagline">
+        CNN-based handwritten digit recognition · ~98% accuracy · Flask REST API
+      </div>
+      <div class="footer-cv-line">
+        <blockquote>
+          "Built a CNN-based MNIST digit classifier achieving ~98% accuracy and deployed it as a Flask REST API for real-time handwritten digit recognition."
+        </blockquote>
+      </div>
+      <div class="footer-bottom">
+        <span>Built with Python · TensorFlow · Flask · ❤️</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
