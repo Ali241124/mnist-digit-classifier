@@ -1,0 +1,20 @@
+# Training data — not needed for inference (~65 MB saved)
+data/
+
+# Training script — not needed at runtime
+train.py
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Git history
+.git/
+
+# Local dev files
+*.log
+.env
+.env.local
